@@ -1,0 +1,12 @@
+version: '3.9'
+
+services:
+  tracker-stats:
+    build:
+      context: .
+    container_name: tracker-stats
+    volumes:
+      - ./cookies:/app/cookies
+    ports:
+      - 5682:5000
+    restart: unless-stopped
