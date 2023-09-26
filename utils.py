@@ -1,4 +1,4 @@
-import re
+import re, os
 
 def parseCookieFile(cookiefile):
     """Parse a cookies.txt file and return a dictionary of key value pairs
@@ -15,3 +15,14 @@ def parseCookieFile(cookiefile):
                     print(e)
           
     return cookies
+
+def getUserAgent():
+    if os.path.isfile('./cookies/useragent.txt'):
+        with open('./cookies/useragent.txt', 'r') as fp:
+            return fp.read().strip()
+    else:
+        return 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246'
+
+def setUserAgent(user_agent):
+    with open('./cookies/useragent.txt', 'w') as fp:
+        fp.write(user_agent)

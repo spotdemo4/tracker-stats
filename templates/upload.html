@@ -1,6 +1,5 @@
 <!doctype html>
-<title>Upload cookie file</title>
-<h1>Upload cookie file</h1>
+<title>Settings</title>
 {% with messages = get_flashed_messages() %}
     {% if messages %}
         <div style="margin-bottom: 5px">
@@ -10,6 +9,7 @@
         </div>
     {% endif %}
 {% endwith %}
+<h1>Upload cookie file</h1>
 <form method=post enctype=multipart/form-data>
     <input type=file name=file>
     <input type=submit value=Upload>
@@ -22,3 +22,10 @@
         {% endfor %}
     </ul>
 {% endif %}
+<h1>Set user agent</h1>
+<form method=post style="margin-bottom: 20px">
+    <input style="width: 300px" type=text name=user_agent value="{{ user_agent }}">
+    <input type=submit value=Set>
+</form>
+Current user agent:<br>
+<span>{{ user_agent_file }}</span>
