@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, flash, request, redirect, render_template
 from waitress import serve
 from utils import parseCookieFile
 import json, os
@@ -16,6 +16,31 @@ from trackers.orpheus import Orpheus
 from trackers.torrentleech import TorrentLeech
 
 app = Flask(__name__)
+app.secret_key = os.urandom(24)
+
+FILENAMES = ['aither.txt', 'alpharatio.txt', 'animez.txt', 'anthelion.txt', 'avistaz.txt', 'cinemaz.txt', 'filelist.txt', 'iptorrents.txt', 'myanonamouse.txt', 'orpheus.txt', 'torrentleech.txt']
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        # Check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # If the user does not select a file, the browser submits an
+        # empty file without a filename.
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and file.filename in FILENAMES:
+            file.save('./cookies/' + file.filename)
+            flash('File uploaded successfully')
+            return redirect(request.url)
+        else:
+            flash('Invalid file')
+            return redirect(request.url)
+    return render_template('upload.html', filenames=FILENAMES)
 
 @app.route('/aither')
 def aither():

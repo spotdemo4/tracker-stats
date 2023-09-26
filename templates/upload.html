@@ -1,0 +1,24 @@
+<!doctype html>
+<title>Upload cookie file</title>
+<h1>Upload cookie file</h1>
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div style="margin-bottom: 5px">
+            {% for message in messages %}
+                <span>{{ message }}</span>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+<form method=post enctype=multipart/form-data>
+    <input type=file name=file>
+    <input type=submit value=Upload>
+</form>
+{% if filenames %}
+    <h3 style="margin-top: 30px; margin-bottom: 0px;">Accepted cookie files:</h3>
+    <ul style="margin-top: 5px;">
+        {% for filename in filenames %}
+            <li>{{ filename }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
