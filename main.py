@@ -14,6 +14,7 @@ from trackers.iptorrents import IPTorrents
 from trackers.myanonamouse import MyAnonamouse
 from trackers.orpheus import Orpheus
 from trackers.torrentleech import TorrentLeech
+from trackers.torrentseeds import TorrentSeeds
 from trackers.uhdbits import UHDBits
 
 app = Flask(__name__)
@@ -31,6 +32,7 @@ TRACKERS = {
     'myanonamouse': MyAnonamouse,
     'orpheus': Orpheus,
     'torrentleech': TorrentLeech,
+    'torrentseeds': TorrentSeeds,
     'uhdbits': UHDBits
 }
 
@@ -68,9 +70,9 @@ def index():
 @app.route('/<tracker>')
 def tracker(tracker):
     if tracker in TRACKERS:
+        tracker_class = TRACKERS[tracker]()
         if os.path.isfile('./cookies/' + tracker + '.txt'):
             try:
-                tracker_class = TRACKERS[tracker]()
                 tracker_class.get_stats(parseCookieFile('./cookies/' + tracker + '.txt'), {'User-Agent': getUserAgent()})
                 return json.dumps(tracker_class.__dict__)
             except Exception as e:
