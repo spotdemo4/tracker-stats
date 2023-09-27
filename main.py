@@ -14,6 +14,7 @@ from trackers.iptorrents import IPTorrents
 from trackers.myanonamouse import MyAnonamouse
 from trackers.orpheus import Orpheus
 from trackers.torrentleech import TorrentLeech
+from trackers.uhdbits import UHDBits
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -29,7 +30,8 @@ TRACKERS = {
     'iptorrents': IPTorrents,
     'myanonamouse': MyAnonamouse,
     'orpheus': Orpheus,
-    'torrentleech': TorrentLeech
+    'torrentleech': TorrentLeech,
+    'uhdbits': UHDBits
 }
 
 @app.route('/', methods=['GET', 'POST'])
