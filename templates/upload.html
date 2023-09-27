@@ -14,11 +14,11 @@
     <input type=file name=file>
     <input type=submit value=Upload>
 </form>
-{% if filenames %}
+{% if trackers %}
     <h3 style="margin-top: 30px; margin-bottom: 0px;">Accepted cookie files:</h3>
     <ul style="margin-top: 5px;">
-        {% for filename in filenames %}
-            <li>{{ filename }}</li>
+        {% for tracker in trackers %}
+            <li>{{ tracker }}.txt</li>
         {% endfor %}
     </ul>
 {% endif %}

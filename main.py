@@ -18,7 +18,19 @@ from trackers.torrentleech import TorrentLeech
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
-FILENAMES = ['aither.txt', 'alpharatio.txt', 'animez.txt', 'anthelion.txt', 'avistaz.txt', 'cinemaz.txt', 'filelist.txt', 'iptorrents.txt', 'myanonamouse.txt', 'orpheus.txt', 'torrentleech.txt']
+TRACKERS = {
+    'aither': Aither,
+    'alpharatio': AlphaRatio,
+    'animez': AnimeZ,
+    'anthelion': Anthelion,
+    'avistaz': AvistaZ,
+    'cinemaz': CinemaZ,
+    'filelist': FileList,
+    'iptorrents': IPTorrents,
+    'myanonamouse': MyAnonamouse,
+    'orpheus': Orpheus,
+    'torrentleech': TorrentLeech
+}
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -32,151 +44,39 @@ def index():
                 flash('No file part')
             return redirect(request.url)
         file = request.files['file']
-        # If the user does not select a file, the browser submits an
-        # empty file without a filename.
+
+        # If the user does not select a file, the browser submits an empty file without a filename.
         if file.filename == '':
             flash('No selected file')
             return redirect(request.url)
-        if file and file.filename in FILENAMES:
+        
+        # If the file is valid, save it to the cookies folder
+        if file and file.filename.split('.')[0] in TRACKERS:
             file.save('./cookies/' + file.filename)
             flash('File uploaded successfully')
             return redirect(request.url)
+        
+        # If the file is invalid, flash an error
         else:
             flash('Invalid file')
             return redirect(request.url)
-    return render_template('upload.html', filenames=FILENAMES, user_agent=request.headers.get('User-Agent'), user_agent_file=getUserAgent())
 
-@app.route('/aither')
-def aither():
-    if os.path.isfile('./cookies/aither.txt'):
-        aither = Aither()
-        try:
-            aither.get_stats(parseCookieFile('./cookies/aither.txt'), {'User-Agent': getUserAgent()})
-            return json.dumps(aither.__dict__)
-        except Exception as e:
-            return json.dumps({'error': str(e)})
-    else:
-        return json.dumps({'error': 'No cookie file found for Aither'})
+    return render_template('upload.html', trackers=TRACKERS, user_agent=request.headers.get('User-Agent'), user_agent_file=getUserAgent())
 
-@app.route('/alpharatio')
-def alpharatio():
-    if os.path.isfile('./cookies/alpharatio.txt'):
-        alpharatio = AlphaRatio()
-        try:
-            alpharatio.get_stats(parseCookieFile('./cookies/alpharatio.txt'), {'User-Agent': getUserAgent()})
-            return json.dumps(alpharatio.__dict__)
-        except Exception as e:
-            return json.dumps({'error': str(e)})
+@app.route('/<tracker>')
+def tracker(tracker):
+    if tracker in TRACKERS:
+        if os.path.isfile('./cookies/' + tracker + '.txt'):
+            try:
+                tracker_class = TRACKERS[tracker]()
+                tracker_class.get_stats(parseCookieFile('./cookies/' + tracker + '.txt'), {'User-Agent': getUserAgent()})
+                return json.dumps(tracker_class.__dict__)
+            except Exception as e:
+                return json.dumps({'error': str(e)})
+        else:
+            return json.dumps({'error': 'No cookie file found for ' + tracker})
     else:
-        return json.dumps({'error': 'No cookie file found for AlphaRatio'})
-
-@app.route('/animez')
-def animez():
-    if os.path.isfile('./cookies/animez.txt'):
-        animez = AnimeZ()
-        try:
-            animez.get_stats(parseCookieFile('./cookies/animez.txt'), {'User-Agent': getUserAgent()})
-            return json.dumps(animez.__dict__)
-        except Exception as e:
-            return json.dumps({'error': str(e)})
-    else:
-        return json.dumps({'error': 'No cookie file found for AnimeZ'})
-
-@app.route('/anthelion')
-def anthelion():
-    if os.path.isfile('./cookies/anthelion.txt'):
-        anthelion = Anthelion()
-        try:
-            anthelion.get_stats(parseCookieFile('./cookies/anthelion.txt'), {'User-Agent': getUserAgent()})
-            return json.dumps(anthelion.__dict__)
-        except Exception as e:
-            return json.dumps({'error': str(e)})
-    else:
-        return json.dumps({'error': 'No cookie file found for Anthelion'})
-
-@app.route('/avistaz')
-def avistaz():
-    if os.path.isfile('./cookies/avistaz.txt'):
-        avistaz = AvistaZ()
-        try:
-            avistaz.get_stats(parseCookieFile('./cookies/avistaz.txt'), {'User-Agent': getUserAgent()})
-            return json.dumps(avistaz.__dict__)
-        except Exception as e:
-            return json.dumps({'error': str(e)})
-    else:
-        return json.dumps({'error': 'No cookie file found for AvistaZ'})
-
-@app.route('/cinemaz')
-def cinemaz():
-    if os.path.isfile('./cookies/cinemaz.txt'):
-        cinemaz = CinemaZ()
-        try:
-            cinemaz.get_stats(parseCookieFile('./cookies/cinemaz.txt'), {'User-Agent': getUserAgent()})
-            return json.dumps(cinemaz.__dict__)
-        except Exception as e:
-            return json.dumps({'error': str(e)})
-    else:
-        return json.dumps({'error': 'No cookie file found for CinemaZ'})
-
-@app.route('/filelist')
-def filelist():
-    if os.path.isfile('./cookies/filelist.txt'):
-        filelist = FileList()
-        try:
-            filelist.get_stats(parseCookieFile('./cookies/filelist.txt'), {'User-Agent': getUserAgent()})
-            return json.dumps(filelist.__dict__)
-        except Exception as e:
-            return json.dumps({'error': str(e)})
-    else:
-        return json.dumps({'error': 'No cookie file found for FileList'})
-
-@app.route('/myanonamouse')
-def myanonamouse():
-    if os.path.isfile('./cookies/myanonamouse.txt'):
-        myanonamouse = MyAnonamouse()
-        try:
-            myanonamouse.get_stats(parseCookieFile('./cookies/myanonamouse.txt'), {'User-Agent': getUserAgent()})
-            return json.dumps(myanonamouse.__dict__)
-        except Exception as e:
-            return json.dumps({'error': str(e)})
-    else:
-        return json.dumps({'error': 'No cookie file found for MyAnonamouse'})
-
-@app.route('/iptorrents')
-def iptorrents():
-    if os.path.isfile('./cookies/iptorrents.txt'):
-        iptorrents = IPTorrents()
-        try:
-            iptorrents.get_stats(parseCookieFile('./cookies/iptorrents.txt'), {'User-Agent': getUserAgent()})
-            return json.dumps(iptorrents.__dict__)
-        except Exception as e:
-            return json.dumps({'error': str(e)})
-    else:
-        return json.dumps({'error': 'No cookie file found for IPTorrents'})
-
-@app.route('/orpheus')
-def orpheus():
-    if os.path.isfile('./cookies/orpheus.txt'):
-        orpheus = Orpheus()
-        try:
-            orpheus.get_stats(parseCookieFile('./cookies/orpheus.txt'), {'User-Agent': getUserAgent()})
-            return json.dumps(orpheus.__dict__)
-        except Exception as e:
-            return json.dumps({'error': str(e)})
-    else:
-        return json.dumps({'error': 'No cookie file found for Orpheus'})
-
-@app.route('/torrentleech')
-def torrentleech():
-    if os.path.isfile('./cookies/torrentleech.txt'):
-        torrentleech = TorrentLeech()
-        try:
-            torrentleech.get_stats(parseCookieFile('./cookies/torrentleech.txt'), {'User-Agent': getUserAgent()})
-            return json.dumps(torrentleech.__dict__)
-        except Exception as e:
-            return json.dumps({'error': str(e)})
-    else:
-        return json.dumps({'error': 'No cookie file found for TorrentLeech'})
+        return json.dumps({'error': 'Invalid tracker'})
 
 if __name__ == '__main__':
     serve(app, listen='*:5000')
