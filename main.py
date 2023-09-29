@@ -8,6 +8,7 @@ from trackers.alpharatio import AlphaRatio
 from trackers.animez import AnimeZ
 from trackers.anthelion import Anthelion
 from trackers.avistaz import AvistaZ
+from trackers.cathoderaytube import CathodeRayTube
 from trackers.cinemaz import CinemaZ
 from trackers.filelist import FileList
 from trackers.iptorrents import IPTorrents
@@ -26,6 +27,7 @@ TRACKERS = {
     'animez': AnimeZ,
     'anthelion': Anthelion,
     'avistaz': AvistaZ,
+    'cathoderaytube': CathodeRayTube,
     'cinemaz': CinemaZ,
     'filelist': FileList,
     'iptorrents': IPTorrents,
