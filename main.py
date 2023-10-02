@@ -1,23 +1,28 @@
-from flask import Flask, flash, request, redirect, render_template
+from flask import Flask, Response, flash, request, redirect, render_template
 from waitress import serve
-from utils import parseCookieFile, getUserAgent, setUserAgent
-import json, os
+from utils import parseCookieFile, parseCookieFileExp, getUserAgent, setUserAgent
+from dotenv import load_dotenv
+from datetime import datetime
+import json, os, humanize
 
 from trackers.aither import Aither
 from trackers.alpharatio import AlphaRatio
 from trackers.animez import AnimeZ
 from trackers.anthelion import Anthelion
 from trackers.avistaz import AvistaZ
+from trackers.blutopia import Blutopia
 from trackers.cathoderaytube import CathodeRayTube
 from trackers.cinemaz import CinemaZ
 from trackers.filelist import FileList
 from trackers.iptorrents import IPTorrents
 from trackers.myanonamouse import MyAnonamouse
+from trackers.nebulance import Nebulance
 from trackers.orpheus import Orpheus
 from trackers.torrentleech import TorrentLeech
 from trackers.torrentseeds import TorrentSeeds
 from trackers.uhdbits import UHDBits
 
+load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
@@ -27,11 +32,13 @@ TRACKERS = {
     'animez': AnimeZ,
     'anthelion': Anthelion,
     'avistaz': AvistaZ,
+    'blutopia': Blutopia,
     'cathoderaytube': CathodeRayTube,
     'cinemaz': CinemaZ,
     'filelist': FileList,
     'iptorrents': IPTorrents,
     'myanonamouse': MyAnonamouse,
+    'nebulance': Nebulance,
     'orpheus': Orpheus,
     'torrentleech': TorrentLeech,
     'torrentseeds': TorrentSeeds,
@@ -66,8 +73,24 @@ def index():
         else:
             flash('Invalid file')
             return redirect(request.url)
+    
+    cookiefiles = {}
+    for file in os.listdir('./cookies'):
+        if file.endswith('.txt') and file != 'useragent.txt':
+            name = file.split('.')[0]
+        
+            exps = parseCookieFileExp('./cookies/' + file)
+            cookies = []
+            for exp in exps:
+                exp_delta = datetime.fromtimestamp(int(exps[exp])) - datetime.now()
+                if datetime.fromtimestamp(int(exps[exp])) < datetime.now():
+                    cookies.append({'name': exp, 'exp': 'expired'})
+                else:
+                    cookies.append({'name': exp, 'exp': humanize.precisedelta(exp_delta, minimum_unit='minutes')})
+            
+            cookiefiles[name] = cookies
 
-    return render_template('upload.html', trackers=TRACKERS, user_agent=request.headers.get('User-Agent'), user_agent_file=getUserAgent())
+    return render_template('upload.html', trackers=TRACKERS, cookiefiles=cookiefiles, user_agent=request.headers.get('User-Agent'), user_agent_file=getUserAgent())
 
 @app.route('/<tracker>')
 def tracker(tracker):
@@ -76,13 +99,13 @@ def tracker(tracker):
         if os.path.isfile('./cookies/' + tracker + '.txt'):
             try:
                 tracker_class.get_stats(parseCookieFile('./cookies/' + tracker + '.txt'), {'User-Agent': getUserAgent()})
-                return json.dumps(tracker_class.__dict__)
+                return Response(json.dumps(tracker_class.__dict__), mimetype='application/json')
             except Exception as e:
-                return json.dumps({'error': str(e)})
+                return Response(json.dumps({'error': str(e)}), mimetype='application/json')
         else:
-            return json.dumps({'error': 'No cookie file found for ' + tracker})
+            return Response(json.dumps({'error': 'No cookie file found for ' + tracker}), mimetype='application/json')
     else:
-        return json.dumps({'error': 'Invalid tracker'})
+        return Response(json.dumps({'error': 'Invalid tracker'}), mimetype='application/json')
 
 if __name__ == '__main__':
     serve(app, listen='*:5000')

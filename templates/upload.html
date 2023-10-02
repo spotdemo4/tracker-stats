@@ -18,7 +18,21 @@
     <h3 style="margin-top: 30px; margin-bottom: 0px;">Accepted cookie files:</h3>
     <ul style="margin-top: 5px;">
         {% for tracker in trackers %}
-            <li>{{ tracker }}.txt</li>
+            {% if tracker in cookiefiles %}
+                <li><b>{{ tracker }}.txt</b></li>
+                <ul>
+                    {% for cookiefile in cookiefiles[tracker] %}
+                        <li>{{ cookiefile['name'] }}</li>
+                        <ul>
+                            <li>
+                                expires: <b>{{ cookiefile['exp'] }}</b>
+                            </li>
+                        </ul>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <li>{{ tracker }}.txt</li>
+            {% endif %}
         {% endfor %}
     </ul>
 {% endif %}
