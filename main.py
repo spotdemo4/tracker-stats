@@ -17,7 +17,9 @@ from trackers.filelist import FileList
 from trackers.iptorrents import IPTorrents
 from trackers.myanonamouse import MyAnonamouse
 from trackers.nebulance import Nebulance
+from trackers.oldtoonsworld import OldToonsWorld
 from trackers.orpheus import Orpheus
+from trackers.reelflix import ReelFliX
 from trackers.torrentleech import TorrentLeech
 from trackers.torrentseeds import TorrentSeeds
 from trackers.uhdbits import UHDBits
@@ -39,7 +41,9 @@ TRACKERS = {
     'iptorrents': IPTorrents,
     'myanonamouse': MyAnonamouse,
     'nebulance': Nebulance,
+    'oldtoonsworld': OldToonsWorld,
     'orpheus': Orpheus,
+    'reelflix': ReelFliX,
     'torrentleech': TorrentLeech,
     'torrentseeds': TorrentSeeds,
     'uhdbits': UHDBits
