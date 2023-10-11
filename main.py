@@ -19,6 +19,7 @@ from trackers.myanonamouse import MyAnonamouse
 from trackers.nebulance import Nebulance
 from trackers.oldtoonsworld import OldToonsWorld
 from trackers.orpheus import Orpheus
+from trackers.privatehd import PrivateHD
 from trackers.reelflix import ReelFliX
 from trackers.torrentleech import TorrentLeech
 from trackers.torrentseeds import TorrentSeeds
@@ -43,6 +44,7 @@ TRACKERS = {
     'nebulance': Nebulance,
     'oldtoonsworld': OldToonsWorld,
     'orpheus': Orpheus,
+    'privatehd': PrivateHD,
     'reelflix': ReelFliX,
     'torrentleech': TorrentLeech,
     'torrentseeds': TorrentSeeds,
