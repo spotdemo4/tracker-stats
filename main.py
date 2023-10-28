@@ -22,6 +22,7 @@ from trackers.orpheus import Orpheus
 from trackers.pixelcove import PixelCove
 from trackers.privatehd import PrivateHD
 from trackers.reelflix import ReelFliX
+from trackers.skipthetrailers import SkipTheTrailers
 from trackers.torrentleech import TorrentLeech
 from trackers.torrentseeds import TorrentSeeds
 from trackers.uhdbits import UHDBits
@@ -48,6 +49,7 @@ TRACKERS = {
     'pixelcove': PixelCove,
     'privatehd': PrivateHD,
     'reelflix': ReelFliX,
+    'skipthetrailers': SkipTheTrailers,
     'torrentleech': TorrentLeech,
     'torrentseeds': TorrentSeeds,
     'uhdbits': UHDBits
