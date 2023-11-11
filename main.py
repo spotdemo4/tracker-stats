@@ -15,6 +15,7 @@ from trackers.cathoderaytube import CathodeRayTube
 from trackers.cinemaz import CinemaZ
 from trackers.filelist import FileList
 from trackers.iptorrents import IPTorrents
+from trackers.morethantv import MoreThanTV
 from trackers.myanonamouse import MyAnonamouse
 from trackers.nebulance import Nebulance
 from trackers.oldtoonsworld import OldToonsWorld
@@ -43,6 +44,7 @@ TRACKERS = {
     'cinemaz': CinemaZ,
     'filelist': FileList,
     'iptorrents': IPTorrents,
+    'morethantv': MoreThanTV,
     'myanonamouse': MyAnonamouse,
     'nebulance': Nebulance,
     'oldtoonsworld': OldToonsWorld,
@@ -76,8 +78,8 @@ def index():
             return redirect(request.url)
         
         # If the file is valid, save it to the cookies folder
-        if file and file.filename.split('.')[0] in TRACKERS:
-            file.save('./cookies/' + file.filename)
+        if file and file.filename.lower().split('.')[0] in TRACKERS:
+            file.save('./cookies/' + file.filename.lower().split('.')[0] + '.txt')
             flash('File uploaded successfully')
             return redirect(request.url)
         
