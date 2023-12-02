@@ -8,7 +8,8 @@ class GazelleGames:
         session = requests.session()
         session.headers.update({'X-API-Key': api_key})
 
-        data = session.get(self.url + f'api.php?request=user?id={user_id}').json()
+        data = session.get(self.url + f'api.php?request=user&id={user_id}').json()
+        print(data)
         self.upload = normalizeSize(convertSize(data['response']['stats']['uploaded']))
         self.download = normalizeSize(convertSize(data['response']['stats']['downloaded']))
         self.ratio = normalizeFloat(data['response']['stats']['ratio'])
