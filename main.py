@@ -14,6 +14,7 @@ from trackers.blutopia import Blutopia
 from trackers.cathoderaytube import CathodeRayTube
 from trackers.cinemaz import CinemaZ
 from trackers.filelist import FileList
+from trackers.gazellegames import GazelleGames
 from trackers.iptorrents import IPTorrents
 from trackers.morethantv import MoreThanTV
 from trackers.myanonamouse import MyAnonamouse
@@ -43,6 +44,7 @@ TRACKERS = {
     'cathoderaytube': CathodeRayTube,
     'cinemaz': CinemaZ,
     'filelist': FileList,
+    'gazellegames': GazelleGames,
     'iptorrents': IPTorrents,
     'morethantv': MoreThanTV,
     'myanonamouse': MyAnonamouse,
@@ -78,7 +80,7 @@ def index():
             return redirect(request.url)
         
         # If the file is valid, save it to the cookies folder
-        if file and file.filename.lower().split('.')[0] in TRACKERS:
+        if file and file.filename.lower().split('.')[0] in TRACKERS and getattr(TRACKERS[file.filename.lower().split('.')[0]], 'get_stats', None):
             file.save('./cookies/' + file.filename.lower().split('.')[0] + '.txt')
             flash('File uploaded successfully')
             return redirect(request.url)
@@ -88,7 +90,15 @@ def index():
             flash('Invalid file')
             return redirect(request.url)
     
-    cookiefiles = {}
+    cookie_trackers = []
+    api_trackers = []
+    for tracker in TRACKERS:
+        if getattr(TRACKERS[tracker], 'get_api', None):
+            api_trackers.append(tracker)
+        if getattr(TRACKERS[tracker], 'get_stats', None):
+            cookie_trackers.append(tracker)
+    
+    cookie_files = {}
     for file in os.listdir('./cookies'):
         if file.endswith('.txt') and file != 'useragent.txt':
             name = file.split('.')[0]
@@ -102,22 +112,39 @@ def index():
                 else:
                     cookies.append({'name': exp, 'exp': humanize.precisedelta(exp_delta, minimum_unit='minutes')})
             
-            cookiefiles[name] = cookies
+            cookie_files[name] = cookies
+    
+    api_keys = []
+    for tracker in TRACKERS:
+        if tracker.upper() + '_API_KEY' in os.environ:
+            api_keys.append(tracker)
 
-    return render_template('upload.html', trackers=TRACKERS, cookiefiles=cookiefiles, user_agent=request.headers.get('User-Agent'), user_agent_file=getUserAgent())
+    return render_template('upload.html', cookie_trackers=cookie_trackers, api_trackers=api_trackers, api_keys=api_keys, cookie_files=cookie_files, user_agent=request.headers.get('User-Agent'), user_agent_file=getUserAgent())
 
 @app.route('/<tracker>')
 def tracker(tracker):
     if tracker in TRACKERS:
         tracker_class = TRACKERS[tracker]()
-        if os.path.isfile('./cookies/' + tracker + '.txt'):
-            try:
-                tracker_class.get_stats(parseCookieFile('./cookies/' + tracker + '.txt'), {'User-Agent': getUserAgent()})
-                return Response(json.dumps(tracker_class.__dict__), mimetype='application/json')
-            except Exception as e:
-                return Response(json.dumps({'error': str(e)}), mimetype='application/json')
-        else:
-            return Response(json.dumps({'error': 'No cookie file found for ' + tracker}), mimetype='application/json')
+
+        # Check if the tracker uses an API key
+        if getattr(tracker_class, 'get_api', None):
+            if tracker.upper() + '_API_KEY' in os.environ and tracker.upper() + '_USER_ID' in os.environ:
+                try:
+                    tracker_class.get_api(os.environ.get(tracker.upper() + '_API_KEY'), os.environ.get(tracker.upper() + '_USER_ID'))
+                    return Response(json.dumps(tracker_class.__dict__), mimetype='application/json')
+                except Exception as e:
+                    return Response(json.dumps({'error': str(e)}), mimetype='application/json')
+        
+        # Check if the tracker uses cookies
+        if getattr(tracker_class, 'get_stats', None):
+            if os.path.isfile('./cookies/' + tracker + '.txt'):
+                try:
+                    tracker_class.get_stats(parseCookieFile('./cookies/' + tracker + '.txt'), {'User-Agent': getUserAgent()})
+                    return Response(json.dumps(tracker_class.__dict__), mimetype='application/json')
+                except Exception as e:
+                    return Response(json.dumps({'error': str(e)}), mimetype='application/json')
+        
+        return Response(json.dumps({'error': 'No API key or cookie file found for ' + tracker}), mimetype='application/json')
     else:
         return Response(json.dumps({'error': 'Invalid tracker'}), mimetype='application/json')
 

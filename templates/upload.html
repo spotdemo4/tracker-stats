@@ -14,28 +14,6 @@
     <input type=file name=file>
     <input type=submit value=Upload>
 </form>
-{% if trackers %}
-    <h3 style="margin-top: 30px; margin-bottom: 0px;">Accepted cookie files:</h3>
-    <ul style="margin-top: 5px;">
-        {% for tracker in trackers %}
-            {% if tracker in cookiefiles %}
-                <li><b>{{ tracker }}.txt</b></li>
-                <ul>
-                    {% for cookiefile in cookiefiles[tracker] %}
-                        <li>{{ cookiefile['name'] }}</li>
-                        <ul>
-                            <li>
-                                expires: <b>{{ cookiefile['exp'] }}</b>
-                            </li>
-                        </ul>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <li>{{ tracker }}.txt</li>
-            {% endif %}
-        {% endfor %}
-    </ul>
-{% endif %}
 <h1>Set user agent</h1>
 <form method=post style="margin-bottom: 20px">
     <input style="width: 300px" type=text name=user_agent value="{{ user_agent }}">
@@ -43,3 +21,33 @@
 </form>
 Current user agent:<br>
 <span>{{ user_agent_file }}</span>
+<h3 style="margin-top: 30px; margin-bottom: 0px;">Accepted cookie files:</h3>
+<ul style="margin-top: 5px;">
+    {% for tracker in cookie_trackers %}
+        {% if tracker in cookie_files %}
+            <li><b>{{ tracker }}.txt</b></li>
+            <ul>
+                {% for cookie_file in cookie_files[tracker] %}
+                    <li>{{ cookie_file['name'] }}</li>
+                    <ul>
+                        <li>
+                            expires: <b>{{ cookie_file['exp'] }}</b>
+                        </li>
+                    </ul>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <li>{{ tracker }}.txt</li>
+        {% endif %}
+    {% endfor %}
+</ul>
+<h3 style="margin-top: 30px; margin-bottom: 0px;">Accepted API keys:</h3>
+<ul style="margin-top: 5px;">
+    {% for tracker in api_trackers %}
+        {% if tracker in api_keys %}
+            <li><b>{{ tracker }}</b></li>
+        {% else %}
+            <li>{{ tracker }}</li>
+        {% endif %}
+    {% endfor %}
+</ul>
