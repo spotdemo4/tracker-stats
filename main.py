@@ -23,6 +23,7 @@ from trackers.oldtoonsworld import OldToonsWorld
 from trackers.orpheus import Orpheus
 from trackers.pixelcove import PixelCove
 from trackers.privatehd import PrivateHD
+from trackers.redacted import Redacted
 from trackers.reelflix import ReelFliX
 from trackers.skipthecommercials import SkipTheCommercials
 from trackers.skipthetrailers import SkipTheTrailers
@@ -53,6 +54,7 @@ TRACKERS = {
     'orpheus': Orpheus,
     'pixelcove': PixelCove,
     'privatehd': PrivateHD,
+    'redacted': Redacted,
     'reelflix': ReelFliX,
     'skipthecommercials': SkipTheCommercials,
     'skipthetrailers': SkipTheTrailers,
