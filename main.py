@@ -13,6 +13,7 @@ from trackers.avistaz import AvistaZ
 from trackers.blutopia import Blutopia
 from trackers.cathoderaytube import CathodeRayTube
 from trackers.cinemaz import CinemaZ
+from trackers.fearnopeer import FearNoPeer
 from trackers.filelist import FileList
 from trackers.gazellegames import GazelleGames
 from trackers.iptorrents import IPTorrents
@@ -44,6 +45,7 @@ TRACKERS = {
     'blutopia': Blutopia,
     'cathoderaytube': CathodeRayTube,
     'cinemaz': CinemaZ,
+    'fearnopeer': FearNoPeer,
     'filelist': FileList,
     'gazellegames': GazelleGames,
     'iptorrents': IPTorrents,
